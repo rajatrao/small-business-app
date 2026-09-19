@@ -1,0 +1,170 @@
+scalar Time
+
+enum Role {
+  CUSTOMER
+  OWNER
+  ADMIN
+}
+
+enum TimeWindow {
+  TODAY
+  WEEK
+  ALL
+}
+
+enum AffinityEventKind {
+  VIEW_CATEGORY
+  VIEW_STORE
+  VIEW_PRODUCT
+  SEARCH
+  VOTE
+  REVIEW
+}
+
+type User {
+  id: ID!
+  email: String!
+  name: String!
+  role: Role!
+}
+
+type Photo {
+  id: ID!
+  url: String!
+  sortOrder: Int!
+}
+
+type Store {
+  id: ID!
+  slug: String!
+  name: String!
+  description: String!
+  category: String!
+  city: String!
+  phone: String
+  address: String
+  photos: [Photo!]!
+  products: [Product!]!
+  reviews: [Review!]!
+  upvoteCount: Int!
+  communityScore: Float!
+  viewerHasVoted: Boolean!
+  createdAt: Time!
+}
+
+type Product {
+  id: ID!
+  slug: String!
+  name: String!
+  description: String!
+  priceCents: Int!
+  displayPrice: String!
+  store: Store!
+  photos: [Photo!]!
+  reviews: [Review!]!
+  upvoteCount: Int!
+  viewerHasVoted: Boolean!
+  createdAt: Time!
+}
+
+type Review {
+  id: ID!
+  rating: Int!
+  body: String!
+  authorFirstName: String!
+  store: Store
+  product: Product
+  createdAt: Time!
+}
+
+type RankedStore {
+  store: Store!
+  rank: Int!
+  communityScore: Float!
+  feedScore: Float!
+}
+
+type TrendingProduct {
+  product: Product!
+  heat: Float!
+}
+
+type TrendingReview {
+  review: Review!
+  heat: Float!
+}
+
+type HomePayload {
+  city: String!
+  rankedStores: [RankedStore!]!
+  trendingProducts: [TrendingProduct!]!
+  trendingReviews: [TrendingReview!]!
+}
+
+type SearchResult {
+  stores: [Store!]!
+  products: [Product!]!
+}
+
+type ChatReply {
+  threadId: ID!
+  message: String!
+  phone: String
+}
+
+type Query {
+  home(city: String, category: String, window: TimeWindow): HomePayload!
+  search(q: String!, city: String): SearchResult!
+  store(slug: String!): Store
+  product(slug: String!): Product
+  me: User
+  myStores: [Store!]!
+  oidcLabel: String!
+}
+
+type Mutation {
+  signup(email: String!, password: String!, name: String!, role: Role): User!
+  login(email: String!, password: String!): User!
+  logout: Boolean!
+  becomeOwner: User!
+  recordAffinityEvent(category: String!, kind: AffinityEventKind!): Boolean!
+  vote(storeId: ID, productId: ID): Boolean!
+  createReview(storeId: ID, productId: ID, rating: Int!, body: String!): Review!
+  createStore(input: CreateStoreInput!): Store!
+  updateStore(id: ID!, input: UpdateStoreInput!): Store!
+  deleteStore(id: ID!): Boolean!
+  createProduct(storeId: ID!, input: CreateProductInput!): Product!
+  updateProduct(id: ID!, input: UpdateProductInput!): Product!
+  uploadPhoto(storeId: ID, productId: ID, filename: String!, contentBase64: String!): Photo!
+  chat(storeId: ID, productId: ID, threadId: ID, message: String!): ChatReply!
+}
+
+input CreateStoreInput {
+  name: String!
+  description: String!
+  category: String!
+  city: String!
+  phone: String
+  address: String
+}
+
+input UpdateStoreInput {
+  name: String
+  description: String
+  category: String
+  city: String
+  phone: String
+  address: String
+}
+
+input CreateProductInput {
+  name: String!
+  description: String!
+  priceCents: Int!
+}
+
+input UpdateProductInput {
+  name: String
+  description: String
+  priceCents: Int
+}
