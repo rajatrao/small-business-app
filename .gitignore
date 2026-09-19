@@ -1,0 +1,21 @@
+# deps / build
+node_modules/
+web/dist/
+web/.env
+api/bin/
+*.exe
+
+# local data
+data/
+*.log
+.env
+.env.local
+
+# go
+api/vendor/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
