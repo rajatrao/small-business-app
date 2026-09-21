@@ -1,0 +1,23 @@
+schema:
+  - internal/adapter/graphql/schema.graphqls
+
+exec:
+  filename: internal/adapter/graphql/generated/generated.go
+  package: generated
+
+model:
+  filename: internal/adapter/graphql/model/models_gen.go
+  package: model
+
+resolver:
+  layout: follow-schema
+  dir: internal/adapter/graphql
+  package: graphql
+  filename_template: "{name}.resolvers.go"
+
+skip_mod_tidy: true
+
+models:
+  Time:
+    model:
+      - github.com/99designs/gqlgen/graphql.Time
